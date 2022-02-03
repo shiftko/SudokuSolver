@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 const int numberOfBlocks = 9;
 const int numberOfXLines = 9;
@@ -30,11 +32,11 @@ var cells = new List<Cell>
 {
     Capacity = numberOfCells
 };
-var xLines = new List<Line>
+var xLines = new List<XLine>
 {
     Capacity = numberOfXLines
 };
-var yLines = new List<Line>
+var yLines = new List<YLine>
 {
     Capacity = numberOfYLines
 };
@@ -97,8 +99,8 @@ executor.Run();
 internal class LogicExecutor
 {
     public List<Cell> Cells { get; set; }
-    public List<Line> XLines { get; set; }
-    public List<Line> YLines { get; set; }
+    public List<XLine> XLines { get; set; }
+    public List<YLine> YLines { get; set; }
     public List<Block> Blocks { get; set; }
 
     public void Run()
@@ -106,6 +108,7 @@ internal class LogicExecutor
         foreach (var cell in Cells)
         {
             Console.WriteLine($@"cell: {cell.XCoord} : {cell.YCoord} : {cell.Value}");
+            cell.PreSetup();
         }
     }
 }
@@ -114,29 +117,53 @@ internal class LogicExecutor
 /* domain entities */
 internal class Cell
 {
+    private static ReadOnlyCollection<string> AvailableValues { get; } =
+        new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9"}.AsReadOnly();
+
     public int XCoord { get; set; }
     public int YCoord { get; set; }
     public string Value { get; set; } = "0";
-    public Line? RefXLine { get; set; }
-    public Line? RefYLine { get; set; }
+    public XLine? RefXLine { get; set; }
+    public YLine? RefYLine { get; set; }
     public Block? RefBlock { get; set; }
+
+    public void PreSetup()
+    {
+        Debug.Assert(RefXLine != null, nameof(RefXLine) + " != null");
+        var valuesByX = RefXLine.GetValues();
+        Debug.Assert(RefYLine != null, nameof(RefYLine) + " != null");
+        var valuesByY = RefYLine.GetValues();
+        Debug.Assert(RefBlock != null, nameof(RefBlock) + " != null");
+        var valuesByBlock = RefBlock.GetValues();
+    }
+
+    private bool IsValid()
+    {
+        return RefXLine != null && RefYLine != null && RefBlock != null;
+    }
 }
 
-internal class Line
+internal class CellsContainer
 {
-    public List<Cell> RefCells { get; set; } = new();
+    public List<Cell> RefCells { get; } = new();
+
+    public IEnumerable<string> GetValues()
+    {
+        return from cell in RefCells
+            where cell.Value != "0"
+            select cell.Value;
+    }
 }
 
-internal class XLine : Line
+internal class XLine : CellsContainer
 {
 }
 
-internal class YLine : Line
+internal class YLine : CellsContainer
 {
 }
 
-internal class Block
+internal class Block : CellsContainer
 {
-    public List<Cell> RefCells { get; set; } = new();
 }
 /* domain entities end */
