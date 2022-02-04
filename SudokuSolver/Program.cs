@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 const int numberOfBlocks = 9;
@@ -117,8 +116,10 @@ internal class LogicExecutor
 /* domain entities */
 internal class Cell
 {
-    private static ReadOnlyCollection<string> AvailableValues { get; } =
-        new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9"}.AsReadOnly();
+    private static List<string> PossibleValues { get; } =
+        new List<string> {"1", "2", "3", "4", "5", "6", "7", "8", "9"}.AsReadOnly().ToList();
+
+    private List<string> AvailableValues { get; set; }
 
     public int XCoord { get; set; }
     public int YCoord { get; set; }
@@ -135,6 +136,11 @@ internal class Cell
         var valuesByY = RefYLine.GetValues();
         Debug.Assert(RefBlock != null, nameof(RefBlock) + " != null");
         var valuesByBlock = RefBlock.GetValues();
+
+        var forbiddenValues =
+            new List<string>(valuesByX.Concat(valuesByY.FindAll(i => true).Concat(valuesByBlock.FindAll(i => true))));
+
+        AvailableValues = new List<string>(PossibleValues.FindAll(i => !forbiddenValues.Exists(fv => fv == i)));
     }
 
     private bool IsValid()
@@ -147,11 +153,11 @@ internal class CellsContainer
 {
     public List<Cell> RefCells { get; } = new();
 
-    public IEnumerable<string> GetValues()
+    public List<string> GetValues()
     {
-        return from cell in RefCells
+        return new List<string>(from cell in RefCells
             where cell.Value != "0"
-            select cell.Value;
+            select cell.Value);
     }
 }
 
