@@ -82,10 +82,7 @@ for (var y = 0; y < 9; y++)
 
 var executor = new Executor
 {
-    Cells = cells,
-    XLines = xLines,
-    YLines = yLines,
-    Blocks = blocks
+    Cells = cells
 };
 
 executor.Run();

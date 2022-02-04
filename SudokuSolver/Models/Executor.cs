@@ -5,26 +5,25 @@ namespace SudokuSolver.Models;
 internal class Executor
 {
     public List<Cell>? Cells { get; init; }
-    public List<XLine>? XLines { get; set; }
-    public List<YLine>? YLines { get; set; }
-    public List<Block>? Blocks { get; set; }
 
     private readonly Stack<Cell> _sequence = new();
     private readonly Stopwatch _watch = new();
-    private int _attempts = 0;
+    private int _attempts;
 
-    public async void Run()
+    public void Run()
     {
-        _watch.Start();
-        PreSetUpCells();
+        if (Cells == null) throw new ArgumentNullException(nameof(Cells));
 
-        do
+        _watch.Start();
+
+        SetUpCells();
+
+        while (HasEmptyCells())
         {
             _attempts++;
-            var emptyCells = Cells.FindAll(cell => !cell.HasValue());
-            var cell = emptyCells.Find(cell =>
-                cell.AvailableValuesCount() == emptyCells.Min(c => c.AvailableValuesCount()));
 
+            var emptyCells = Cells.FindAll(cell => !cell.HasValue());
+            var cell = GetBestCell(emptyCells);
             if (cell.AvailableValuesCount() == 0)
             {
                 ApplyValue(CheckPreviousCell());
@@ -34,12 +33,22 @@ internal class Executor
                 _sequence.Push(cell);
                 ApplyValue(cell);
             }
-        } while (IsNotReady());
+        }
 
         _watch.Stop();
-        Console.WriteLine($"Attempts: {++_attempts}");
+        Console.WriteLine($"Attempts: {_attempts}");
         Console.WriteLine($"Execution Time: {_watch.ElapsedMilliseconds} ms");
         DrawToConsole();
+    }
+
+    private bool HasEmptyCells()
+    {
+        return Cells != null && Cells.Exists(cell => cell.Value == Cell.InitialValue);
+    }
+
+    private static Cell GetBestCell(List<Cell> emptyCells)
+    {
+        return emptyCells.Aggregate((a, b) => a.AvailableValuesCount() > b.AvailableValuesCount() ? b : a);
     }
 
     private void ApplyValue(Cell cell)
@@ -49,7 +58,7 @@ internal class Executor
         // cell.RefXLine?.ForbidValueForRefCells(value);
         // cell.RefYLine?.ForbidValueForRefCells(value);
         // cell.RefBlock?.ForbidValueForRefCells(value);
-        PreSetUpCells();
+        SetUpCells();
         // Console.WriteLine($@"cell: {cell.XCoord} : {cell.YCoord} : {cell.Value}");
     }
 
@@ -71,14 +80,11 @@ internal class Executor
         return previousCell;
     }
 
-    private void PreSetUpCells()
+    private void SetUpCells()
     {
-        foreach (var cell in Cells)
+        foreach (var cell in Cells.Where(cell => !cell.HasValue()))
         {
-            if (!cell.HasValue())
-            {
-                cell.Setup();
-            }
+            cell.Setup();
         }
     }
 
@@ -99,10 +105,5 @@ internal class Executor
         }
 
         Console.WriteLine();
-    }
-
-    private bool IsNotReady()
-    {
-        return Cells.Exists(cell => cell.Value == "0");
     }
 }
