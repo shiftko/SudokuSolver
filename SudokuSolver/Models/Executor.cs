@@ -4,7 +4,7 @@ namespace SudokuSolver.Models;
 
 internal class Executor
 {
-    public List<Cell>? Cells { get; init; }
+    public List<Cell> Cells { get; init; } = new();
 
     private readonly Stack<Cell> _sequence = new();
     private readonly Stopwatch _watch = new();
@@ -12,8 +12,6 @@ internal class Executor
 
     public void Run()
     {
-        if (Cells == null) throw new ArgumentNullException(nameof(Cells));
-
         _watch.Start();
 
         SetUpCells();
@@ -43,7 +41,7 @@ internal class Executor
 
     private bool HasEmptyCells()
     {
-        return Cells != null && Cells.Exists(cell => cell.Value == Cell.InitialValue);
+        return Cells.Exists(cell => cell.Value == Cell.InitialValue);
     }
 
     private static Cell GetBestCell(List<Cell> emptyCells)
@@ -93,7 +91,7 @@ internal class Executor
         for (var y = 0; y < 9; y++)
         {
             var delimiter = (y + 1) % 3 == 0
-                ? Environment.NewLine + Environment.NewLine
+                ? $"{Environment.NewLine}{Environment.NewLine}"
                 : Environment.NewLine;
             for (var x = 0; x < 9; x++)
             {
