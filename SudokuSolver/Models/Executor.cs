@@ -22,14 +22,14 @@ internal class Executor
 
             var emptyCells = Cells.FindAll(cell => !cell.HasValue());
             var cell = GetBestCell(emptyCells);
-            if (cell.AvailableValuesCount() == 0)
-            {
-                ApplyValue(CheckPreviousCell());
-            }
-            else
+            if (cell.HasAvailableValues())
             {
                 _sequence.Push(cell);
                 ApplyValue(cell);
+            }
+            else
+            {
+                ApplyValue(CheckPreviousCell());
             }
         }
 
@@ -51,13 +51,11 @@ internal class Executor
 
     private void ApplyValue(Cell cell)
     {
-        var value = cell.GetFirstAvailableValue();
-        cell.Value = value;
+        cell.ApplyFirstAvailableValue();
+        SetUpCells();
         // cell.RefXLine?.ForbidValueForRefCells(value);
         // cell.RefYLine?.ForbidValueForRefCells(value);
         // cell.RefBlock?.ForbidValueForRefCells(value);
-        SetUpCells();
-        // Console.WriteLine($@"cell: {cell.XCoord} : {cell.YCoord} : {cell.Value}");
     }
 
     private Cell CheckPreviousCell()

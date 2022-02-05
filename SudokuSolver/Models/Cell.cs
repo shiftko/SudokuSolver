@@ -6,6 +6,9 @@ internal class Cell
 
     private readonly List<string> _possibleValues = new() {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
+    public int XCoord { get; init; }
+    public int YCoord { get; init; }
+
     public string Value { get; set; } = InitialValue;
     public XLine RefXLine { get; init; } = new();
     public YLine RefYLine { get; init; } = new();
@@ -34,14 +37,19 @@ internal class Cell
         return Value != InitialValue;
     }
 
+    public bool HasAvailableValues()
+    {
+        return AvailableValues.Count > 0;
+    }
+
     public int AvailableValuesCount()
     {
         return AvailableValues.Count;
     }
 
-    public string GetFirstAvailableValue()
+    public void ApplyFirstAvailableValue()
     {
-        return AvailableValues.First();
+        Value = AvailableValues.First();
     }
 
     public List<string> GetAvailableValues()
@@ -60,5 +68,10 @@ internal class Cell
     public void ForbidCurrentValue()
     {
         AvailableValues.Remove(Value);
+    }
+
+    public void LogToConsole()
+    {
+        Console.WriteLine($@"cell: {XCoord} : {YCoord} : {Value}");
     }
 }

@@ -68,6 +68,8 @@ for (var y = 0; y < 9; y++)
         var block = blocks[y / 3 * 3 + x / 3];
         var cell = new Cell()
         {
+            XCoord = x,
+            YCoord = y,
             RefXLine = xLine,
             RefYLine = yLine,
             RefBlock = block,
