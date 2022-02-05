@@ -53,6 +53,7 @@ internal class Executor
     {
         cell.ApplyFirstAvailableValue();
         SetUpCells();
+
         // cell.RefXLine?.ForbidValueForRefCells(value);
         // cell.RefYLine?.ForbidValueForRefCells(value);
         // cell.RefBlock?.ForbidValueForRefCells(value);
@@ -60,20 +61,20 @@ internal class Executor
 
     private Cell CheckPreviousCell()
     {
-        /* step back and try other value or other cell */
-        var previousCell = _sequence.Peek();
-        var availableValues =
-            new List<string>(previousCell.GetAvailableValues()
-                .FindAll(option => option != previousCell.Value));
-        if (availableValues.Count == 0)
+        while (true)
         {
+            /* step back and try other value or other cell */
+            var previousCell = _sequence.Peek();
+            var availableValues = previousCell.GetAvailableValues().Where(v => v != previousCell.Value);
+            if (availableValues.Any())
+            {
+                previousCell.ForbidCurrentValue();
+                return previousCell;
+            }
+
             previousCell.Reset();
             _sequence.Pop();
-            return CheckPreviousCell();
         }
-
-        previousCell.ForbidCurrentValue();
-        return previousCell;
     }
 
     private void SetUpCells()
