@@ -1,9 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using SudokuSolver.Models;
 
-const int numberOfBlocks = 9;
-const int numberOfXLines = 9;
-const int numberOfYLines = 9;
+const int containerCapacity = 9;
 const int numberOfCells = 81;
 var condition = @"
     0, 0, 0,  0, 0, 0,  0, 1, 4,
@@ -20,9 +18,9 @@ var condition = @"
 ";
 
 condition = Regex.Replace(condition, @"\D+", " ");
-var cellsValues = condition.Trim().Split().ToList();
+var cellsValues = condition.Trim().Split();
 
-if (cellsValues.Count != numberOfCells)
+if (cellsValues.Length != numberOfCells)
 {
     throw new Exception("Invalid number of cells values!");
 }
@@ -33,30 +31,22 @@ var cells = new List<Cell>
 };
 var xLines = new List<XLine>
 {
-    Capacity = numberOfXLines
+    Capacity = containerCapacity
 };
 var yLines = new List<YLine>
 {
-    Capacity = numberOfYLines
+    Capacity = containerCapacity
 };
 var blocks = new List<Block>
 {
-    Capacity = numberOfBlocks
+    Capacity = containerCapacity
 };
 
-for (var i = 0; i < numberOfBlocks; i++)
-{
-    blocks.Add(new Block());
-}
-
-for (var i = 0; i < numberOfXLines; i++)
+for (var i = containerCapacity; i > 0; i--)
 {
     xLines.Add(new XLine());
-}
-
-for (var i = 0; i < numberOfYLines; i++)
-{
     yLines.Add(new YLine());
+    blocks.Add(new Block());
 }
 
 for (var y = 0; y < 9; y++)
@@ -75,10 +65,10 @@ for (var y = 0; y < 9; y++)
             RefBlock = block,
             Value = cellsValues[y * 9 + x]
         };
-        cells.Add(cell);
         xLine.RefCells.Add(cell);
         yLine.RefCells.Add(cell);
         block.RefCells.Add(cell);
+        cells.Add(cell);
     }
 }
 

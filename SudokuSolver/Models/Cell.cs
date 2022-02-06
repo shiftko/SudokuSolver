@@ -67,14 +67,6 @@ internal class Cell
         return AvailableValues;
     }
 
-    public void RemoveAvailableValue(string value)
-    {
-        if (!HasValue())
-        {
-            AvailableValues.Remove(value);
-        }
-    }
-
     public void ForbidCurrentValue()
     {
         AvailableValues.Remove(Value);
@@ -87,10 +79,5 @@ internal class Cell
         forbiddenValues.UnionWith(RefYLine.GetRefCellsValues());
         forbiddenValues.UnionWith(RefBlock.GetRefCellsValues());
         return forbiddenValues;
-    }
-
-    public void LogToConsole()
-    {
-        Console.WriteLine($@"cell: {XCoord} : {YCoord} : {Value}");
     }
 }

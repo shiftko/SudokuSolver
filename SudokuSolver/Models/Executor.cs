@@ -55,10 +55,6 @@ internal class Executor
     {
         cell.ApplyFirstAvailableValue();
         SetUpCells();
-
-        // cell.RefXLine?.ForbidValueForRefCells(value);
-        // cell.RefYLine?.ForbidValueForRefCells(value);
-        // cell.RefBlock?.ForbidValueForRefCells(value);
     }
 
     private Cell CheckPreviousCell()

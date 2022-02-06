@@ -19,7 +19,10 @@ internal static class ConsoleLogger
 
             Console.Write(delimiter);
         }
+    }
 
-        Console.WriteLine();
+    public static void LogToConsole(Cell cell)
+    {
+        Console.WriteLine($@"cell: {cell.XCoord} : {cell.YCoord} : {cell.Value}");
     }
 }

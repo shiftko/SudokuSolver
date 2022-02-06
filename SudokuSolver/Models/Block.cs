@@ -4,7 +4,7 @@ namespace SudokuSolver.Models;
 
 internal class Block : CellsContainer
 {
-    public IEnumerable<string> GetUsedValuesFromAdjacentCells(int xCoord, int yCoord)
+    public HashSet<string> GetUsedValuesFromAdjacentCells(int xCoord, int yCoord)
     {
         HashSet<string> possibleValues = new(Cell.PossibleValues);
         foreach (var cell in GetEmptyCells())
