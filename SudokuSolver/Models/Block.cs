@@ -9,7 +9,7 @@ internal class Block : CellsContainer
         HashSet<string> possibleValues = new(Cell.PossibleValues);
         foreach (var cell in GetEmptyCells())
         {
-            if (cell.XCoord != xCoord && cell.YCoord != yCoord)
+            if (!(cell.XCoord == xCoord && cell.YCoord == yCoord))
             {
                 possibleValues.IntersectWith(cell.GetForbiddenValues());
             }

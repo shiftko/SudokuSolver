@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using SudokuSolver.Helpers;
 
 namespace SudokuSolver.Models;
 
@@ -36,7 +37,8 @@ internal class Executor
         _watch.Stop();
         Console.WriteLine($"Attempts: {_attempts}");
         Console.WriteLine($"Execution Time: {_watch.ElapsedMilliseconds} ms");
-        DrawToConsole();
+
+        ConsoleLogger.ShowGrid(Cells);
     }
 
     private bool HasEmptyCells()
@@ -83,24 +85,5 @@ internal class Executor
         {
             cell.Setup();
         }
-    }
-
-    private void DrawToConsole()
-    {
-        for (var y = 0; y < 9; y++)
-        {
-            var delimiter = (y + 1) % 3 == 0
-                ? $"{Environment.NewLine}{Environment.NewLine}"
-                : Environment.NewLine;
-            for (var x = 0; x < 9; x++)
-            {
-                var ident = (x + 1) % 3 == 0 ? "  " : " ";
-                Console.Write($"{Cells[y * 9 + x].Value}{ident}");
-            }
-
-            Console.Write(delimiter);
-        }
-
-        Console.WriteLine();
     }
 }

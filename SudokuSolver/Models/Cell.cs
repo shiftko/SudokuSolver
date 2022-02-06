@@ -21,9 +21,19 @@ internal class Cell
         // using a HashSet increases performance drastically
         var forbiddenValues = GetForbiddenValues();
 
-        // var usedValuesFromAdjacentLines = RefBlock.GetUsedValuesFromAdjacentCells(XCoord, YCoord);
+        // using this logic increases performance drastically --> 23ms
+        var usedValuesFromAdjacentLines = RefBlock.GetUsedValuesFromAdjacentCells(XCoord, YCoord);
 
-        AvailableValues = PossibleValues.FindAll(pv => !forbiddenValues.Contains(pv));
+        if (usedValuesFromAdjacentLines.Any())
+        {
+            AvailableValues = PossibleValues
+                .FindAll(pv => !forbiddenValues.Contains(pv))
+                .FindAll(pv => usedValuesFromAdjacentLines.Contains(pv));
+        }
+        else
+        {
+            AvailableValues = PossibleValues.FindAll(pv => !forbiddenValues.Contains(pv));
+        }
     }
 
     public void Reset()
