@@ -4,7 +4,7 @@ internal class Cell
 {
     public const string InitialValue = "0";
 
-    private readonly List<string> _possibleValues = new() {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+    public static readonly List<string> PossibleValues = new() {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
     public int XCoord { get; init; }
     public int YCoord { get; init; }
@@ -18,12 +18,12 @@ internal class Cell
 
     public void Setup()
     {
-        var valuesByX = RefXLine.GetValues();
-        var valuesByY = RefYLine.GetValues();
-        var valuesByBlock = RefBlock.GetValues();
-        var forbiddenValues = valuesByX.Concat(valuesByY.Concat(valuesByBlock)).ToList();
+        // using a HashSet increases performance drastically
+        var forbiddenValues = GetForbiddenValues();
 
-        AvailableValues = _possibleValues.FindAll(pv => !forbiddenValues.Exists(fv => fv == pv));
+        // var usedValuesFromAdjacentLines = RefBlock.GetUsedValuesFromAdjacentCells(XCoord, YCoord);
+
+        AvailableValues = PossibleValues.FindAll(pv => !forbiddenValues.Contains(pv));
     }
 
     public void Reset()
@@ -68,6 +68,15 @@ internal class Cell
     public void ForbidCurrentValue()
     {
         AvailableValues.Remove(Value);
+    }
+
+    public HashSet<string> GetForbiddenValues()
+    {
+        HashSet<string> forbiddenValues = new();
+        forbiddenValues.UnionWith(RefXLine.GetRefCellsValues());
+        forbiddenValues.UnionWith(RefYLine.GetRefCellsValues());
+        forbiddenValues.UnionWith(RefBlock.GetRefCellsValues());
+        return forbiddenValues;
     }
 
     public void LogToConsole()
