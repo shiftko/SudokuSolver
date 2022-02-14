@@ -15,22 +15,22 @@ internal class Executor
     {
         _watch.Start();
 
-        SetUpCells();
-
         while (HasEmptyCells())
         {
             _attempts++;
+            SetUpCells();
 
             var emptyCells = Cells.FindAll(cell => !cell.HasValue());
             var cell = GetBestCell(emptyCells);
             if (cell.HasAvailableValues())
             {
                 _sequence.Push(cell);
-                ApplyValue(cell);
+                cell.ApplyFirstAvailableValue();
             }
             else
             {
-                ApplyValue(CheckPreviousCell());
+                GetPreviousCellWithAnotherValue()
+                    .ApplyFirstAvailableValue();
             }
         }
 
@@ -48,20 +48,15 @@ internal class Executor
 
     private static Cell GetBestCell(List<Cell> emptyCells)
     {
+        /* get the cell with the least number of possible values */
         return emptyCells.Aggregate((a, b) => a.AvailableValuesCount() > b.AvailableValuesCount() ? b : a);
     }
 
-    private void ApplyValue(Cell cell)
-    {
-        cell.ApplyFirstAvailableValue();
-        SetUpCells();
-    }
-
-    private Cell CheckPreviousCell()
+    private Cell GetPreviousCellWithAnotherValue()
     {
         while (true)
         {
-            /* step back and try other value or other cell */
+            /* get the last fulfilled cell with other possible values */
             var previousCell = _sequence.Peek();
             var availableValues = previousCell.GetAvailableValues().Where(v => v != previousCell.Value);
             if (availableValues.Any())
@@ -70,6 +65,10 @@ internal class Executor
                 return previousCell;
             }
 
+            /*
+             * In this case, the cell does not have any valid values,
+             * so it will be reset and removed from the sequence stack.
+             */
             previousCell.Reset();
             _sequence.Pop();
         }
