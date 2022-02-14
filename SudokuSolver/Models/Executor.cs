@@ -38,7 +38,7 @@ internal class Executor
         Console.WriteLine($"Attempts: {_attempts}");
         Console.WriteLine($"Execution Time: {_watch.ElapsedMilliseconds} ms");
 
-        ConsoleLogger.ShowGrid(Cells);
+        ConsoleLogger.DrawTheGrid(Cells);
     }
 
     private bool HasEmptyCells()

@@ -4,7 +4,7 @@ namespace SudokuSolver.Helpers;
 
 internal static class ConsoleLogger
 {
-    public static void ShowGrid(List<Cell> cells)
+    public static void DrawTheGrid(List<Cell> cells)
     {
         for (var y = 0; y < 9; y++)
         {
@@ -21,7 +21,7 @@ internal static class ConsoleLogger
         }
     }
 
-    public static void LogToConsole(Cell cell)
+    public static void OutputCellData(Cell cell)
     {
         Console.WriteLine($@"cell: {cell.XCoord} : {cell.YCoord} : {cell.Value}");
     }
